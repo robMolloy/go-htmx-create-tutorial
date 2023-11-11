@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Form with htmx and Error Handling</title>
+    <script src="https://unpkg.com/htmx.org@1.7.0/dist/htmx.js"></script>
+  </head>
+  <body>
+    <form id="myForm" hx-post="/submit" hx-trigger="submit" hx-target="#output">
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" required />
+      <span id="nameError" style="color: red"></span>
+
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required />
+      <span id="emailError" style="color: red"></span>
+
+      <button type="submit" hx-indicator="#loading">Submit</button>
+    </form>
+
+    <div id="output"></div>
+
+    <script>
+      document
+        .getElementById("myForm")
+        .addEventListener("htmx:configRequest", function (event) {
+          // Perform client-side validation before submitting the form
+          if (!validateForm()) {
+            event.preventDefault(); // Prevent the form from being submitted
+          }
+        });
+
+      function validateForm() {
+        // Reset error messages
+        document.getElementById("nameError").textContent = "";
+        document.getElementById("emailError").textContent = "";
+
+        // Validate Name
+        var nameInput = document.getElementById("name");
+        var nameValue = nameInput.value.trim();
+        if (nameValue === "") {
+          document.getElementById("nameError").textContent =
+            "Name is required.";
+          return false;
+        }
+
+        // Validate Email
+        var emailInput = document.getElementById("email");
+        var emailValue = emailInput.value.trim();
+        if (emailValue === "") {
+          document.getElementById("emailError").textContent =
+            "Email is required.";
+          return false;
+        }
+
+        // You can add more complex validation logic for the email field if needed
+
+        // If all validations pass, return true
+        return true;
+      }
+    </script>
+  </body>
+</html>
+<!-- In this example:
+
+The hx-post attribute specifies the URL to which the form should be submitted.
+The hx-trigger attribute specifies the event that triggers the form submission (in this case, the "submit" event).
+The hx-target attribute specifies where the response should be inserted (in this case, the element with the ID "output").
+The hx-indicator attribute specifies the loading indicator (optional).
+The htmx:configRequest event is used to intercept the form submission and call the validateForm function. If the form is not valid, event.preventDefault() is called to prevent the form from being submitted. If the form is valid, it will be submitted as usual.
+
+This example assumes that you have a server-side endpoint at the specified URL ("/submit") that handles the form submission and returns a response. Adjust the URL and server-side logic based on your application's needs.
+ -->
