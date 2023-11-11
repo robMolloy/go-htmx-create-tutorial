@@ -1,8 +1,5 @@
 console.log(`loaded at ${new Date().toLocaleTimeString()}`);
 
-const contactFormElement = document.getElementById("add-contact-form");
-const contactListElement = document.getElementById("contact-list");
-
 const isValidEmailValue = (val) => {
   if (!val.includes("@")) return "email value must contain an @ symbol.";
   const minLength = 5;
@@ -52,7 +49,8 @@ const validateForm = () => {
 
 const handleSubmit = (e) => {
   e.preventDefault();
-  const formElement = e.target;
+
+  const formElement = document.getElementById("add-contact-form");
   const nameElement = formElement.querySelector("[name='name']");
   const emailElement = formElement.querySelector("[name='email']");
 
@@ -67,9 +65,9 @@ const handleSubmit = (e) => {
     const htmlString = `<li class="mb-1 bg-red-100">${data.name} - ${data.email}</li>`;
     /*********** Send back to FE *****************/
 
+    const contactListElement = document.getElementById("contact-list");
     contactListElement.insertAdjacentHTML("beforeend", htmlString);
     nameElement.value = "";
     emailElement.value = "";
   }
 };
-contactFormElement.addEventListener("submit", handleSubmit);
