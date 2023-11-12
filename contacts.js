@@ -25,8 +25,8 @@ const isValidNameValue = (val) => {
 
 const validateNameInput = () => {
   const formElement = document.getElementById("add-contact-form");
-  const nameInput = formElement.querySelector('[name="name"]');
-  const nameErrorElm = formElement.querySelector('[name="name-error"]');
+  const nameInput = formElement.querySelector("[name='name']");
+  const nameErrorElm = formElement.querySelector("[name='name-error']");
 
   const nameError = isValidNameValue(nameInput.value);
   nameErrorElm.innerHTML = nameError === true ? "" : nameError;
