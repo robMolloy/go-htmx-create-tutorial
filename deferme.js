@@ -1,5 +1,13 @@
 console.log(`loaded at ${new Date().toLocaleTimeString()}`);
 
+const delay = (val) => {
+  return new Promise((res) => {
+    setTimeout(() => {
+      res(true);
+    }, val);
+  });
+};
+
 const isValidEmailValue = (val) => {
   if (!val.includes("@")) return "email value must contain an @ symbol.";
   const minLength = 5;
@@ -7,6 +15,7 @@ const isValidEmailValue = (val) => {
     return `email value must be at least ${minLength} characters.`;
   return true;
 };
+
 const isValidNameValue = (val) => {
   const minLength = 3;
   if (val.length < minLength)
@@ -34,8 +43,8 @@ const validateEmailInput = () => {
 
 const validateForm = () => {
   const formElement = document.getElementById("add-contact-form");
-  const nameElement = formElement.querySelector("[name='name']");
-  const emailElement = formElement.querySelector("[name='email']");
+  const nameElement = formElement.querySelector('[name="name"]');
+  const emailElement = formElement.querySelector('[name="email"]');
   validateEmailInput();
   validateNameInput();
   const isDataValidObj = {
@@ -47,27 +56,78 @@ const validateForm = () => {
   return isValid;
 };
 
-const handleSubmit = (e) => {
-  e.preventDefault();
-
+const submitData = async () => {
   const formElement = document.getElementById("add-contact-form");
-  const nameElement = formElement.querySelector("[name='name']");
-  const emailElement = formElement.querySelector("[name='email']");
+  const nameElement = formElement?.querySelector("[name='name']");
+  const emailElement = formElement?.querySelector("[name='email']");
 
-  const data = { name: nameElement.value, email: emailElement.value };
+  const data = { name: nameElement?.value, email: emailElement.value };
+
+  /************** Send to BE *******************/
+  // BE validation
+  // on success add to db etc then create html
+  await delay(1000);
+  const htmlString = `<li class="p-1 mb-1 bg-blue-100 rounded-xl">${data.name} - ${data.email}</li>`;
+  return htmlString;
+  /*********** Send back to FE *****************/
+};
+const resetForm = () => {
+  const formElement = document.getElementById("add-contact-form");
+  const nameElement = formElement?.querySelector("[name='name']");
+  const emailElement = formElement?.querySelector("[name='email']");
+
+  nameElement.focus();
+  nameElement.value = "";
+  emailElement.value = "";
+};
+
+const showLoadingSpinner = () => {
+  const formElement = document.getElementById("add-contact-form");
+  const spinnerElement = formElement?.querySelector("[name='spinner']");
+
+  spinnerElement.classList.remove("hidden");
+};
+const hideLoadingSpinner = () => {
+  const formElement = document.getElementById("add-contact-form");
+  const spinnerElement = formElement?.querySelector("[name='spinner']");
+
+  spinnerElement.classList.add("hidden");
+};
+
+const addContactToContactList = (htmlString) => {
+  const contactListElement = document.getElementById("contact-list");
+  contactListElement?.insertAdjacentHTML("beforeend", htmlString);
+};
+const disableForm = () => {
+  const formElement = document.getElementById("add-contact-form");
+  const nameElement = formElement?.querySelector("[name='name']");
+  const emailElement = formElement?.querySelector("[name='email']");
+  nameElement.disabled = true;
+  emailElement.disabled = true;
+};
+
+const enableForm = () => {
+  const formElement = document.getElementById("add-contact-form");
+  const nameElement = formElement?.querySelector("[name='name']");
+  const emailElement = formElement?.querySelector("[name='email']");
+  nameElement.disabled = false;
+  emailElement.disabled = false;
+};
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
   const isValid = validateForm();
 
   if (isValid) {
-    /************** Send to BE *******************/
-    // Add to db
-    // on success create html string and send back
-    const htmlString = `<li class="mb-1 bg-red-100">${data.name} - ${data.email}</li>`;
-    /*********** Send back to FE *****************/
+    disableForm();
+    showLoadingSpinner();
 
-    const contactListElement = document.getElementById("contact-list");
-    contactListElement.insertAdjacentHTML("beforeend", htmlString);
-    nameElement.value = "";
-    emailElement.value = "";
+    const htmlString = await submitData();
+    addContactToContactList(htmlString);
+
+    enableForm();
+    resetForm();
+    hideLoadingSpinner();
   }
 };
