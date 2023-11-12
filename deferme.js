@@ -71,6 +71,26 @@ const submitData = async () => {
   return htmlString;
   /*********** Send back to FE *****************/
 };
+
+const showFormLoadingSpinner = () => {
+  const formElement = document.getElementById("add-contact-form");
+  const spinnerElement = formElement?.querySelector("[name='spinner']");
+
+  spinnerElement.classList.remove("hidden");
+};
+
+const hideFormLoadingSpinner = () => {
+  const formElement = document.getElementById("add-contact-form");
+  const spinnerElement = formElement?.querySelector("[name='spinner']");
+
+  spinnerElement.classList.add("hidden");
+};
+
+const addHtmlToList = (htmlString) => {
+  const contactListElement = document.getElementById("contact-list");
+  contactListElement?.insertAdjacentHTML("beforeend", htmlString);
+};
+
 const resetForm = () => {
   const formElement = document.getElementById("add-contact-form");
   const nameElement = formElement?.querySelector("[name='name']");
@@ -81,23 +101,6 @@ const resetForm = () => {
   emailElement.value = "";
 };
 
-const showLoadingSpinner = () => {
-  const formElement = document.getElementById("add-contact-form");
-  const spinnerElement = formElement?.querySelector("[name='spinner']");
-
-  spinnerElement.classList.remove("hidden");
-};
-const hideLoadingSpinner = () => {
-  const formElement = document.getElementById("add-contact-form");
-  const spinnerElement = formElement?.querySelector("[name='spinner']");
-
-  spinnerElement.classList.add("hidden");
-};
-
-const addContactToContactList = (htmlString) => {
-  const contactListElement = document.getElementById("contact-list");
-  contactListElement?.insertAdjacentHTML("beforeend", htmlString);
-};
 const disableForm = () => {
   const formElement = document.getElementById("add-contact-form");
   const nameElement = formElement?.querySelector("[name='name']");
@@ -121,13 +124,13 @@ const handleSubmit = async (e) => {
 
   if (isValid) {
     disableForm();
-    showLoadingSpinner();
+    showFormLoadingSpinner();
 
     const htmlString = await submitData();
-    addContactToContactList(htmlString);
+    addHtmlToList(htmlString);
 
     enableForm();
     resetForm();
-    hideLoadingSpinner();
+    hideFormLoadingSpinner();
   }
 };
