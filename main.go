@@ -6,26 +6,34 @@ import (
 	"net/http"
 
 	chi "github.com/go-chi/chi/v5"
-	chiMiddleware "github.com/go-chi/chi/v5/middleware"
+	cors "github.com/go-chi/cors"
 )
 
 const url = "localhost:3002"
 
 func main() {
-	fmt.Println("server started")
-
+	fmt.Println(`Server started`)
 	r := chi.NewRouter()
-	r.Use(chiMiddleware.Logger)
 
-	http.HandleFunc("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		templateString := `this is server code`
-		fmt.Fprintf(w, templateString)
+	// Basic CORS
+	// for more ideas, see: https://developer.github.com/v3/#cross-origin-resource-sharing
+	r.Use(cors.Handler(cors.Options{
+		// AllowedOrigins:   []string{"https://foo.com"}, // Use this to allow specific origin hosts
+		AllowedOrigins: []string{"https://*", "http://*"},
+		// AllowOriginFunc:  func(r *http.Request, origin string) bool { return true },
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: false,
+		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
 
-	http.HandleFunc("/foo", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		templateString := `this is server code at foo`
-		fmt.Fprintf(w, templateString)
-	}))
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("welcome"))
+	})
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("welcome from foo"))
+	})
 
-	log.Fatal(http.ListenAndServe(url, nil))
+	log.Fatal(http.ListenAndServe("localhost:3002", r))
 }
