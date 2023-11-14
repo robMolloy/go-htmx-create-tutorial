@@ -61,13 +61,18 @@ const submitData = async () => {
   const nameElement = formElement?.querySelector("[name='name']");
   const emailElement = formElement?.querySelector("[name='email']");
 
-  const data = { name: nameElement?.value, email: emailElement.value };
+  const data = { Name: nameElement?.value, Email: emailElement.value };
+  console.log(`contacts.js:${/*LL*/ 65}`, { data });
 
   /************** Send to BE *******************/
   // BE validation
   // on success add to db etc then create html
   await delay(1000);
-  const htmlString = `<li class="p-1 mb-1 bg-blue-100 rounded-xl">${data.name} - ${data.email}</li>`;
+  const response = await fetch(`http://localhost:3002/add-contact`, {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+  const htmlString = await response.text();
   return htmlString;
   /*********** Send back to FE *****************/
 };
