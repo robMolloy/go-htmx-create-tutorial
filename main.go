@@ -29,11 +29,6 @@ type Contact struct {
 	Email string `json:"email"`
 }
 
-var c1 = Contact{
-	Name:  "",
-	Email: "",
-}
-
 func getDataFromHttpResponseBody[T any](httpResponseBody io.ReadCloser, data T) (err error, rtn T) {
 	body, err := io.ReadAll(httpResponseBody)
 	if err != nil {
@@ -52,27 +47,6 @@ func main() {
 	r := chi.NewRouter()
 	r.Use(middleware1)
 	r.Use(middleware2)
-
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("welcome"))
-	})
-	r.Get("/foo1", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("welcome from foo"))
-	})
-	r.Get("/html", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte(`<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-</head>
-<body>
- hello world
-</body>
-</html>`))
-	})
 
 	r.Post("/add-contact", func(w http.ResponseWriter, r *http.Request) {
 		var cd Contact
